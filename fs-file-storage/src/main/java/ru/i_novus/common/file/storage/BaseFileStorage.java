@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
-public abstract class BaseFileStorage implements FileStorage
+public abstract class BaseFileStorage implements FsFileStorage
 {
 	@Value ("${fileStorage.root}")
 	private String root;
