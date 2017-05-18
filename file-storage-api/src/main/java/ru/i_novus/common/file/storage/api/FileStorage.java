@@ -1,4 +1,4 @@
-package ru.i_novus.common.file.storage;
+package ru.i_novus.common.file.storage.api;
 
 import java.io.InputStream;
 

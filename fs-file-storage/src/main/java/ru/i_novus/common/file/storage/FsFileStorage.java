@@ -1,5 +1,7 @@
 package ru.i_novus.common.file.storage;
 
+import ru.i_novus.common.file.storage.api.FileStorage;
+
 import java.io.InputStream;
 
 /**

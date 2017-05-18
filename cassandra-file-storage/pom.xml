@@ -11,5 +11,19 @@
 
     <artifactId>cassandra-file-storage</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>ru.i-novus.common</groupId>
+            <artifactId>file-storage-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
