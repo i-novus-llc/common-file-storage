@@ -73,7 +73,7 @@ public abstract class BaseFileStorage implements FsFileStorage
 	{
 		if (fileManager == null)
 		{
-			fileManager = new FileManager(root, getWorkspaceName(), getSpaceName());
+			fileManager = new FileManager(getRoot(), getWorkspaceName(), getSpaceName());
 		}
 		return fileManager;
 	}
