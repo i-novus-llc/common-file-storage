@@ -4,6 +4,8 @@ import com.datastax.driver.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.i_novus.common.file.storage.api.FileStorage;
+import ru.i_novus.common.file.storage.api.exception.EmptyFileException;
+import ru.i_novus.common.file.storage.api.exception.NotFoundException;
 
 import javax.annotation.PreDestroy;
 import java.io.*;
@@ -84,8 +86,9 @@ public class CassandraFileStorage implements FileStorage {
 
     @Override
     public InputStream getContent(String path) {
-
         ResultSet rs = session.execute(selectChunk.bind(path, 1));
+        if (!rs.iterator().hasNext())
+            throw new NotFoundException();
         Row row = rs.one();
         Map<String, Integer> metadata = row.getMap("metadata", String.class, Integer.class);
         Integer chunkCount = metadata.get("chunkCount");
@@ -129,6 +132,9 @@ public class CassandraFileStorage implements FileStorage {
                 }
             }
 
+            if (nChunksWritten == 0)
+                throw new EmptyFileException();
+
             writeMetadata(name, firstChunkSize, nChunksWritten, nBytesWritten);
             return name;
         } catch (IOException e) {
@@ -138,7 +144,10 @@ public class CassandraFileStorage implements FileStorage {
 
     @Override
     public void removeContent(String path) {
-        Row row = session.execute(selectMetadata.bind(path)).one();
+        ResultSet rs = session.execute(selectMetadata.bind(path));
+        if (!rs.iterator().hasNext())
+            return;
+        Row row = rs.one();
         Map<String, Integer> metadata = row.getMap("metadata", String.class, Integer.class);
         Integer count = metadata.get("chunkCount");
         List<Integer> chunks = new ArrayList<>(count);
@@ -209,6 +218,4 @@ public class CassandraFileStorage implements FileStorage {
                 "  PRIMARY KEY ((name, chunk_num)) " +
                 ");");
     }
-
-
 }
