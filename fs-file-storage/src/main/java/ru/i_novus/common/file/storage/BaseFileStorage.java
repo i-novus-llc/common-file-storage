@@ -6,26 +6,23 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.List;
 
-public abstract class BaseFileStorage implements FsFileStorage
-{
-	@Value ("${fileStorage.root}")
-	private String root;
+public abstract class BaseFileStorage implements FsFileStorage {
+    @Value("${fileStorage.root}")
+    private String root;
 
-	private FileManager fileManager;
+    private FileManager fileManager;
 
-	protected abstract String getWorkspaceName();
+    protected abstract String getWorkspaceName();
 
-	protected abstract String getSpaceName();
+    protected abstract String getSpaceName();
 
     @Override
-	public InputStream getContent(String path)
-	{
-		return getFileManager().getContent(path);
-	}
+    public InputStream getContent(String path) {
+        return getFileManager().getContent(path);
+    }
 
-	@Override
-	public String saveContent(InputStream content, String path)
-	{
+    @Override
+    public String saveContent(InputStream content, String path) {
         Calendar calendar = Calendar.getInstance();
         String separator = "/";
         String fullPath = new StringBuilder().append(calendar.get(Calendar.YEAR)).append(separator)
@@ -34,47 +31,39 @@ public abstract class BaseFileStorage implements FsFileStorage
 
         getFileManager().saveContent(content, fullPath);
         return fullPath;
-	}
+    }
 
     @Override
-    public String saveContentWithFullPath(InputStream content, String path)
-    {
+    public String saveContentWithFullPath(InputStream content, String path) {
         getFileManager().saveContent(content, path);
         return path;
     }
 
-	@Override
-	public void removeContent(String name)
-	{
-		getFileManager().removeContent(name);
-	}
-
-    public boolean isExistContent(String name)
-    {
-       return getFileManager().isFileExist(name);
+    @Override
+    public void removeContent(String name) {
+        getFileManager().removeContent(name);
     }
 
-    public List<Node> getChildrenOf(String path)
-    {
+    public boolean isExistContent(String name) {
+        return getFileManager().isFileExist(name);
+    }
+
+    public List<Node> getChildrenOf(String path) {
         return getFileManager().getChildrenOf(path);
     }
 
-    public String getRoot()
-    {
+    public String getRoot() {
         return root;
     }
 
-    public void setRoot(String root)
-    {
+    public void setRoot(String root) {
         this.root = root;
     }
 
-    private synchronized FileManager getFileManager()
-	{
-		if (fileManager == null)
-		{
-			fileManager = new FileManager(getRoot(), getWorkspaceName(), getSpaceName());
-		}
-		return fileManager;
-	}
+    private synchronized FileManager getFileManager() {
+        if (fileManager == null) {
+            fileManager = new FileManager(getRoot(), getWorkspaceName(), getSpaceName());
+        }
+        return fileManager;
+    }
 }

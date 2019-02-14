@@ -1,149 +1,97 @@
 package ru.i_novus.common.file.storage;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class FileManager
-{
-	private static final Logger logger = LoggerFactory.getLogger(FileManager.class);
+@Slf4j
+public class FileManager {
 
-	private File space;
+    private String space;
 
-	public FileManager(String root, String workspace, String space)
-	{
-        if (root == null)
-        {
+    public FileManager(String root, String workspace, String space) {
+        if (root == null) {
             throw new IllegalArgumentException("root argument for FileManager cannot be null");
         }
-		this.space = new File(root);
-		if (workspace != null)
-			this.space = new File(root, workspace);
-		if (space != null)
-			this.space = new File(this.space, space);
-	}
+        this.space = root;
+        if (workspace != null)
+            this.space = Paths.get(root, workspace).toString();
+        if (space != null)
+            this.space = Paths.get(this.space, space).toString();
+    }
 
-	private File resolveFile(String path)
-	{
-        if (path == null)
-        {
+    private Path resolveFile(String path) {
+        if (path == null) {
             throw new IllegalArgumentException("path is null, cannot resolve file");
         }
-		return new File(space, path);
-	}
-
-	public InputStream getContent(String path)
-	{
-		File target = resolveFile(path);
-		Closer closer = new Closer();
-		try
-		{
-			FileInputStream fis = closer.register(new FileInputStream(target));
-			return closer.register(new BufferedInputStream(fis));
-		}
-		catch (FileNotFoundException e)
-		{
-			closer.rethrow(e);
-			closer.close();
-			throw new IllegalStateException();//unreachable due to closer
-		}
-	}
-
-	public void saveContent(InputStream content, String path)
-	{
-		File target = resolveFile(path);
-		new File(target.getParent()).mkdirs();
-		Closer closer = new Closer();
-		try
-		{
-			FileOutputStream fos = closer.register(new FileOutputStream(target));
-			BufferedOutputStream bos = closer.register(new BufferedOutputStream(fos));
-			int b;
-
-			while ((b = content.read()) != -1)
-			{
-				bos.write(b);
-			}
-		}
-		catch (IOException e)
-		{
-			closer.rethrow(e);
-		}
-		finally
-		{
-			closer.close();
-		}
-	}
-
-    public boolean isFileExist(String path)
-    {
-        File target =resolveFile(path);
-        return target.exists();
+        return Paths.get(space, path);
     }
 
-	public void removeContent(String path)
-	{
-		File target = resolveFile(path);
-        if (target.exists())
-        {
-            target.delete();
-        }
-	}
+    public InputStream getContent(String path) {
+        Path target = resolveFile(path);
 
-    public List<Node> getChildrenOf(String path)
-    {
-        List<Node> children = new LinkedList<>();
-        File target = resolveFile(path);
-        File[] files = target.listFiles();
-        if (files != null)
-        {
-            for (File child : files)
-            {
-                children.add(new Node(child.getName(), path + "/" + child.getName(), new Date(child.lastModified())
-                        , child.isDirectory()));
-            }
+        try {
+            return Files.newInputStream(target);
+        } catch (IOException e) {
+            logger.error("Cannot get file '{}' content", target, e);
+            throw new UncheckedIOException(e);
         }
-        return children;
     }
 
-	class Closer//todo use com.google.common.io.Closer instead
-	{
-		private Deque<Closeable> stack = new ArrayDeque<>();
+    public void saveContent(InputStream content, String path) {
+        Path target = resolveFile(path);
+        try {
+            Files.createDirectories(target.getParent());
+            Files.copy(content, target, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.error("Cannot save data as file content '{}'", target, e);
+            throw new UncheckedIOException(e);
+        }
+    }
 
-		private Throwable error;
+    public boolean isFileExist(String path) {
+        Path target = resolveFile(path);
+        return Files.exists(target);
+    }
 
-		public <T extends Closeable> T register(T closeable)
-		{
-			stack.push(closeable);
-			return closeable;
-		}
+    public void removeContent(String path) {
+        Path target = resolveFile(path);
+        try {
+            Files.deleteIfExists(target);
+        } catch (IOException e) {
+            logger.warn("Cannot delete file '{}'", path, e);
+        }
+    }
 
-		public void close()
-		{
-			while (!stack.isEmpty())
-			{
-				Closeable resource = stack.pop();
-				try
-				{
-					resource.close();
-				}
-				catch (IOException e)
-				{
-					if (error == null)
-						error = e;
-					else
-						logger.error(e.getMessage(), e);
-				}
-			}
-			if (error != null)
-				throw new RuntimeException(error);
-		}
+    public List<Node> getChildrenOf(String path) {
+        Path target = resolveFile(path);
+        try {
+            return Files.walk(target, 1).map(
+                    file -> {
+                        FileTime lastModified = null;
+                        try {
+                            lastModified = Files.getLastModifiedTime(file);
+                        } catch (IOException e) {
+                            logger.warn("Cannot get file '{}' last modified datetime", file, e);
+                        }
 
-		public void rethrow(IOException e)
-		{
-			error = e;
-		}
-	}
+                        return new Node(
+                                file.getFileName().toString(),
+                                file.toString(),
+                                lastModified == null ? null : new Date(lastModified.toMillis()),
+                                Files.isDirectory(file));
+                    })
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            logger.error("Cannot list children of '{}' path", path, e);
+            return Collections.emptyList();
+        }
+    }
 }
