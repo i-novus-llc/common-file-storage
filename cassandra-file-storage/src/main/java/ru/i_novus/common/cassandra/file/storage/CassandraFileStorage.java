@@ -1,8 +1,7 @@
 package ru.i_novus.common.cassandra.file.storage;
 
 import com.datastax.driver.core.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import ru.i_novus.common.file.storage.api.FileStorage;
 import ru.i_novus.common.file.storage.api.exception.EmptyFileException;
 import ru.i_novus.common.file.storage.api.exception.NotFoundException;
@@ -15,9 +14,8 @@ import java.util.*;
 /**
  * Created by tnurdinov on 15.05.2017.
  */
+@Slf4j
 public class CassandraFileStorage implements FileStorage {
-
-    private static final Logger logger = LoggerFactory.getLogger(CassandraFileStorage.class);
 
     private int chunkSize;
 
@@ -41,13 +39,11 @@ public class CassandraFileStorage implements FileStorage {
 
     private Cluster cluster;
 
-
-
     public CassandraFileStorage(String space, List<String> cassandraAddresses, String replication,  Integer chunkSize) {
         this.replication = replication != null ? replication : "{ 'class' : 'SimpleStrategy', 'replication_factor' : 1 }";
         try {
             cluster = Cluster.builder()
-                    .addContactPoints(cassandraAddresses.toArray(new String[cassandraAddresses.size()]))
+                    .addContactPoints(cassandraAddresses.toArray(new String[0]))
                     .build();
             session = cluster.connect();
         } catch (Throwable e){
@@ -182,13 +178,13 @@ public class CassandraFileStorage implements FileStorage {
     }
 
     private void writeChunk(String name, Integer chunkNumber, ByteBuffer data) {
-        Map<String, Integer> metadata = new HashMap();
+        Map<String, Integer> metadata = new HashMap<>();
         metadata.put("chunkSize", data.limit());
         session.execute(insertChunk.bind(name, chunkNumber, data, metadata));
     }
 
     private void writeMetadata(String name, int chunkSize, int chunkCount, int objectSize){
-        Map<String, Integer> metadata = new HashMap();
+        Map<String, Integer> metadata = new HashMap<>();
         metadata.put("chunkCount", chunkCount);
         metadata.put("objectSize", objectSize);
         metadata.put("chunkSize", chunkSize);
