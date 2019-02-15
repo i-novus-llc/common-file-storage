@@ -10,6 +10,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class FileManager {
@@ -58,7 +59,7 @@ public class FileManager {
 
     public boolean isFileExist(String path) {
         Path target = resolveFile(path);
-        return Files.exists(target);
+        return target.toFile().exists();
     }
 
     public void removeContent(String path) {
@@ -72,8 +73,8 @@ public class FileManager {
 
     public List<Node> getChildrenOf(String path) {
         Path target = resolveFile(path);
-        try {
-            return Files.walk(target, 1).map(
+        try (Stream<Path> filesStream = Files.walk(target, 1)) {
+            return filesStream.map(
                     file -> {
                         FileTime lastModified = null;
                         try {
@@ -86,7 +87,7 @@ public class FileManager {
                                 file.getFileName().toString(),
                                 file.toString(),
                                 lastModified == null ? null : new Date(lastModified.toMillis()),
-                                Files.isDirectory(file));
+                                file.toFile().isDirectory());
                     })
                     .collect(Collectors.toList());
         } catch (IOException e) {
