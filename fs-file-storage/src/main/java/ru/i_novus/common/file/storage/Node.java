@@ -22,9 +22,9 @@ public class Node {
         this.path = path;
         this.lasModified = lasModified;
         isFolder = folder;
-        int idx = name.lastIndexOf(".");
-        if (idx > 0) {
-            type = name.substring(name.indexOf("."));
+        int idx = name.lastIndexOf('.');
+        if (idx > 0 && idx < (name.length() - 1)) {
+            type = name.substring(idx + 1);
         }
     }
 }
