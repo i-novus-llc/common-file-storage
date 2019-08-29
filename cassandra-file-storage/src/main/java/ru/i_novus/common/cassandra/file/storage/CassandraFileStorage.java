@@ -46,8 +46,8 @@ public class CassandraFileStorage implements FileStorage {
                     .addContactPoints(cassandraAddresses.toArray(new String[0]))
                     .build();
             session = cluster.connect();
-        } catch (Throwable e){
-            logger.error("cannot build cluster", e);
+        } catch (RuntimeException e) {
+            logger.error("Cannot build cluster", e);
             if (cluster != null) {
                 cluster.close();
             }
@@ -134,7 +134,7 @@ public class CassandraFileStorage implements FileStorage {
             writeMetadata(name, firstChunkSize, nChunksWritten, nBytesWritten);
             return name;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -157,10 +157,9 @@ public class CassandraFileStorage implements FileStorage {
         try (InputStream is = new ByteArrayInputStream(byteBuffer.array())){
             return is;
         } catch (IOException e){
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
-
 
     private int readFully(InputStream in, byte[] b, int off, int len) throws IOException {
         int total = 0;
