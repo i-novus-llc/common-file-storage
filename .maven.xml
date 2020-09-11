@@ -19,7 +19,6 @@
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
                 <altSnapshotDeploymentRepository>ossrh::default::https://oss.sonatype.org/content/repositories/snapshots</altSnapshotDeploymentRepository>
                 <altReleaseDeploymentRepository>ossrh::default::https://oss.sonatype.org/service/local/staging/deploy/maven2/</altReleaseDeploymentRepository>
-                <altDeploymentRepository>ossrh::default::https://oss.sonatype.org/content/repositories/snapshots</altDeploymentRepository>
             </properties>
         </profile>
     </profiles>
