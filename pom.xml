@@ -7,6 +7,54 @@
     <version>2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>File Storage Parent Configuration</name>
+    <description>File Storage is a tool for accessing content from different sources.</description>
+    <url>https://git.i-novus.ru/i-novus-llc/common-file-storage</url>
+
+    <organization>
+        <name>I-Novus LLC</name>
+        <url>https://i-novus.ru/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>Apache License, Version 2.0</name>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>tnurdinov</id>
+            <name>Timur Nurdinov</name>
+            <email>tnurdinov@i-novus.ru</email>
+            <url>https://i-novus.ru/</url>
+            <organizationUrl>https://i-novus.ru/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+3</timezone>
+        </developer>
+        <developer>
+            <id>keddok</id>
+            <name>Rushan Makhmutov</name>
+            <email>rmakhmutov@i-novus.ru</email>
+            <url>https://i-novus.ru/</url>
+            <organizationUrl>https://i-novus.ru/</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+3</timezone>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:i-novus-llc/common-file-storage.git</connection>
+        <url>scm:git:git@github.com:i-novus-llc/common-file-storage.git</url>
+        <developerConnection>scm:git:git@github.com:i-novus-llc/common-file-storage.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -18,13 +66,6 @@
         <maven.javadoc.version>3.1.0</maven.javadoc.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
     </properties>
-
-    <scm>
-        <connection>scm:git:https://git.i-novus.ru/util/common-file-storage.git</connection>
-        <url>https://git.i-novus.ru/util/common-file-storage</url>
-        <developerConnection>scm:git:https://git.i-novus.ru/util/common-file-storage.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
 
     <modules>
         <module>fs-file-storage</module>
