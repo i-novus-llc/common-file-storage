@@ -3,8 +3,10 @@ package ru.i_novus.common.file.storage;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.function.BiFunction;
 
 public abstract class BaseFileStorage implements FsFileStorage {
     @Value("${fileStorage.root}")
@@ -37,6 +39,48 @@ public abstract class BaseFileStorage implements FsFileStorage {
     public String saveContentWithFullPath(InputStream content, String path) {
         getFileManager().saveContent(content, path);
         return path;
+    }
+
+    @Override
+    public String saveUploadedFileContent(
+            InputStream content,
+            String name,
+            UUID... pathIds
+    ) {
+        return saveContent(content, name, null, pathIds);
+    }
+
+    @Override
+    public String saveUploadedFileContent(
+            InputStream content,
+            String name,
+            Charset charset,
+            UUID... pathIds
+    ) {
+        return saveContent(content, name, charset, pathIds);
+    }
+
+    private String saveContent(
+            InputStream content,
+            String name,
+            Charset charset,
+            UUID... pathIds
+    ) {
+        String fileName = new String(
+                name.getBytes(Optional.ofNullable(charset).orElse(StandardCharsets.ISO_8859_1)),
+                StandardCharsets.UTF_8
+        );
+
+        String encodedFileName = Base64.getEncoder().encodeToString(fileName.getBytes());
+
+        StringBuilder savePath = new StringBuilder();
+        for (UUID id : pathIds) {
+            savePath.append(id);
+            savePath.append("/");
+        }
+        savePath.append(encodedFileName);
+
+        return saveContent(content, savePath.toString());
     }
 
     @Override
