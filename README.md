@@ -8,3 +8,4 @@ This utility is for accessing some content from different sources in the same wa
 - Filesystem
 - Postgres
 - Cassandra
+- Minio
