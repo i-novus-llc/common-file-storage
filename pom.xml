@@ -73,6 +73,7 @@
         <module>cassandra-file-storage</module>
         <module>file-storage-api</module>
         <module>pg-file-storage</module>
+        <module>minio-file-storage</module>
     </modules>
 
     <dependencyManagement>
