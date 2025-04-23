@@ -1,11 +1,7 @@
 package ru.i_novus.common.file.storage.minio;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-@ConfigurationProperties(prefix = "common-file-storage.minio")
 public class MinioFileStorageProperties {
 
-    private boolean enabled = true;
     private String endpoint;
     private String accessKey;
     private String secretKey;
@@ -16,14 +12,6 @@ public class MinioFileStorageProperties {
     private long connectTimeoutSeconds = 10;
     private long readTimeoutSeconds = 10;
     private long writeTimeoutSeconds = 10;
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 
     public String getEndpoint() {
         return endpoint;

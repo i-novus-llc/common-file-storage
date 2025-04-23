@@ -7,11 +7,17 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.i_novus.common.file.storage.api.FileStorage;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.Collections.emptyList;
 
 public class MinioFileStorage implements FileStorage {
 
@@ -20,8 +26,35 @@ public class MinioFileStorage implements FileStorage {
     private final MinioClient minioClient;
     private final MinioFileStorageProperties properties;
 
-    public MinioFileStorage(MinioClient minioClient, MinioFileStorageProperties properties) {
-        this.minioClient = minioClient;
+    public MinioFileStorage(MinioFileStorageProperties properties) {
+        this(properties, null);
+    }
+
+    public MinioFileStorage(
+            MinioFileStorageProperties properties,
+            List<MinioFileStorageHttpClientCustomizer> customizers
+    ) {
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient
+                .Builder()
+                .connectionPool(
+                        new ConnectionPool(
+                                properties.getMaxIdleConnections(),
+                                properties.getKeepAliveDurationMinutes(),
+                                TimeUnit.MINUTES
+                        )
+                )
+                .connectTimeout(properties.getConnectTimeoutSeconds(), TimeUnit.SECONDS)
+                .readTimeout(properties.getReadTimeoutSeconds(), TimeUnit.SECONDS)
+                .writeTimeout(properties.getWriteTimeoutSeconds(), TimeUnit.SECONDS);
+        List<MinioFileStorageHttpClientCustomizer> nonNullCustomizers = customizers == null ? emptyList() : customizers;
+        for (MinioFileStorageHttpClientCustomizer customizer : nonNullCustomizers) {
+            httpClientBuilder = customizer.customize(httpClientBuilder);
+        }
+        this.minioClient = MinioClient.builder()
+                                      .endpoint(properties.getEndpoint())
+                                      .credentials(properties.getAccessKey(), properties.getSecretKey())
+                                      .httpClient(httpClientBuilder.build())
+                                      .build();
         this.properties = properties;
         createBucketIfNotExists();
     }

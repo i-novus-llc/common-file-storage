@@ -4,5 +4,5 @@ import okhttp3.OkHttpClient;
 
 @FunctionalInterface
 public interface MinioFileStorageHttpClientCustomizer {
-    OkHttpClient customize(OkHttpClient client);
+    OkHttpClient.Builder customize(OkHttpClient.Builder clientBuilder);
 }
