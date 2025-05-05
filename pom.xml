@@ -10,7 +10,7 @@
 
     <name>File Storage Parent Configuration</name>
     <description>File Storage is a tool for accessing content from different sources.</description>
-    <url>https://git.i-novus.ru/i-novus-llc/common-file-storage</url>
+    <url>https://git.i-novus.ru/util/common-file-storage</url>
 
     <organization>
         <name>I-Novus LLC</name>
