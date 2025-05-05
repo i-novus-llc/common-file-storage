@@ -50,9 +50,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:util/common-file-storage.git</connection>
-        <url>scm:git:git@github.com:util/common-file-storage.git</url>
-        <developerConnection>scm:git:git@github.com:util/common-file-storage.git</developerConnection>
+        <connection>scm:git:https://git.i-novus.ru/util/common-file-storage.git</connection>
+        <url>scm:git:https://git.i-novus.ru/util/common-file-storage.git</url>
+        <developerConnection>scm:git:https://git.i-novus.ru/util/common-file-storage.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
