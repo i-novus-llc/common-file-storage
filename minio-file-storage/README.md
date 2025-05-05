@@ -12,7 +12,7 @@ Java-библиотека для хранения и чтения файлов �
 <dependency>
   <groupId>ru.i-novus.common</groupId>
   <artifactId>minio-file-storage</artifactId>
-  <version>2.3</version>
+  <version>2.4</version>
 </dependency>
 ```
 
