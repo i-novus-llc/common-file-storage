@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>pg-file-storage</artifactId>
+    <name>pg-file-storage</name>
 
     <parent>
         <groupId>ru.i-novus.common</groupId>
