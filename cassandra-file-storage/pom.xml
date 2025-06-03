@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cassandra-file-storage</artifactId>
+    <name>cassandra-file-storage</name>
 
     <parent>
         <groupId>ru.i-novus.common</groupId>
