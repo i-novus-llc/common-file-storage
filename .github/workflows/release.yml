@@ -3,6 +3,9 @@
 
 name: Release to Maven Central
 
+variables:
+  GIT_STRATEGY: clone
+
 on:
   push:
     tags:
